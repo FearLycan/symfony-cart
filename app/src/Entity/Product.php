@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Common\Entity\Entity;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
@@ -15,6 +16,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Product extends Entity
 {
+    const CURRENCIES = ['PLN', 'USD', 'EUR'];
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -23,17 +26,22 @@ class Product extends Entity
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, name="name")
+     * @ORM\Column(type="string", length=255, name="name", nullable=false)
+     * @Assert\NotBlank
      */
     private $name;
 
     /**
-     * @ORM\Column(type="decimal", precision=5, scale=2, name="price")
+     * @ORM\Column(type="float", precision=5, scale=2, name="price", nullable=false)
+     * @Assert\Type(type="float", message="Price must be a numeric value")
+     * @Assert\NotBlank
      */
     private $price;
 
     /**
-     * @ORM\Column(type="string", length=3, name="currency")
+     * @ORM\Column(type="string", length=3, name="currency",nullable=false)
+     * @Assert\Choice(choices=Product::CURRENCIES, message="Choose a valid currency.")
+     * @Assert\NotBlank
      */
     private $currency;
 
