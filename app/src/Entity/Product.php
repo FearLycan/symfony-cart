@@ -4,8 +4,11 @@ namespace App\Entity;
 
 use App\Common\Entity\Entity;
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
@@ -44,6 +47,17 @@ class Product extends Entity
      * @Assert\NotBlank
      */
     private $currency;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Cart::class, mappedBy="products")
+     * @Ignore
+     */
+    private $carts;
+
+    public function __construct()
+    {
+        $this->carts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -88,5 +102,33 @@ class Product extends Entity
     public function setCurrency($currency): void
     {
         $this->currency = $currency;
+    }
+
+    /**
+     * @return Collection|Cart[]
+     * @Ignore
+     */
+    public function getCarts(): Collection
+    {
+        return $this->carts;
+    }
+
+    public function addCart(Cart $cart): self
+    {
+        if (!$this->carts->contains($cart)) {
+            $this->carts[] = $cart;
+            $cart->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCart(Cart $cart): self
+    {
+        if ($this->carts->removeElement($cart)) {
+            $cart->removeProduct($this);
+        }
+
+        return $this;
     }
 }

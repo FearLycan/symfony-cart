@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class PostController
+ * Class ProductController
  * @package App\Controller
  * @Route("/api", name="products_")
  */
@@ -84,9 +84,9 @@ class ProductController extends ApiController
     /**
      * @param int $id
      * @return JsonResponse
-     * @Route("/products/{id}", methods={"DELETE"}, name="delete")
+     * @Route("/products/{id}", methods={"DELETE"}, name="remove")
      */
-    public function delete($id)
+    public function remove($id)
     {
         $product = $this->find($id);
 

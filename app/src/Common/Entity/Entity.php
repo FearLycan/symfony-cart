@@ -3,6 +3,7 @@
 namespace App\Common\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 /**
  * @ORM\HasLifecycleCallbacks
@@ -18,6 +19,7 @@ abstract class Entity
     /**
      * @var \DateTime
      * @Doctrine\ORM\Mapping\Column(type="datetime", name="updated_at", nullable=true)
+     * @Ignore()
      */
     protected $updatedAt;
 
