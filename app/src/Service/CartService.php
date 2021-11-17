@@ -76,7 +76,7 @@ class CartService
             }
         }
 
-        throw new Exception('product_id is missing or not well-formed.', Response::HTTP_INSUFFICIENT_STORAGE);
+        throw new Exception('product_id is missing or not well-formed or the product does not exist.', Response::HTTP_INSUFFICIENT_STORAGE);
     }
 
     public function remove(Cart $cart, $data)
