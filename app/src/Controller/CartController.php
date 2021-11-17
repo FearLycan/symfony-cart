@@ -56,17 +56,10 @@ class CartController extends ApiController
     public function add(Request $request, $key)
     {
         $cart = $this->find($key);
-        $form = $this->buildForm(CartType::class, new Cart());
 
-        $form->handleRequest($request);
+        $this->service->add($cart, $request->request->all());
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->service->add($cart, $form->getData()->getProducts()[0]);
-
-            return $this->respond($this->service->summary($cart), Response::HTTP_OK);
-        } else {
-            return $this->respond($this->errorHandler->formHandler($form), Response::HTTP_BAD_REQUEST);
-        }
+        return $this->respond($this->service->summary($cart), Response::HTTP_OK);
     }
 
     /**
@@ -77,16 +70,10 @@ class CartController extends ApiController
     public function remove(Request $request, $key)
     {
         $cart = $this->find($key);
-        $form = $this->buildForm(CartType::class, new Cart());
 
-        $form->submit($request->request->all());
-        if ($form->isValid()) {
-            $this->service->remove($cart, $form->getData()->getProducts()[0]);
+        $this->service->remove($cart, $request->request->all());
 
-            return $this->respond($this->service->summary($cart), Response::HTTP_OK);
-        } else {
-            return $this->respond($this->errorHandler->formHandler($form), Response::HTTP_BAD_REQUEST);
-        }
+        return $this->respond($this->service->summary($cart), Response::HTTP_OK);
     }
 
     /**
@@ -97,18 +84,10 @@ class CartController extends ApiController
     public function create(Request $request)
     {
         $cart = new Cart();
-        $form = $this->buildForm(CartType::class, $cart);
 
-        $form->handleRequest($request);
+        $this->service->create($cart, $request->request->all());
 
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $cart = $this->service->create($cart);
-
-            return $this->respond($this->service->summary($cart), Response::HTTP_CREATED);
-        } else {
-            return $this->respond($this->errorHandler->formHandler($form), Response::HTTP_BAD_REQUEST);
-        }
+        return $this->respond($this->service->summary($cart), Response::HTTP_CREATED);
 
     }
 

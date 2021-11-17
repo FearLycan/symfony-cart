@@ -32,16 +32,21 @@ class CartService
         $this->em = $em;
     }
 
-    public function create(Cart $cart)
+    public function create(Cart $cart,$data)
     {
+        $product = $this->checkProductID($data);
+
+        $cart->addProduct($product);
         $this->em->persist($cart);
         $this->em->flush();
 
         return $cart;
     }
 
-    public function add(Cart $cart, Product $product)
+    public function add(Cart $cart, $data)
     {
+        $product = $this->checkProductID($data);
+
         if (count($cart->getProducts()) >= self::MAX_ITEMS) {
             throw new Exception('The cart is full, the number of permitted products is: ' . self::MAX_ITEMS, Response::HTTP_INSUFFICIENT_STORAGE);
         }
@@ -56,10 +61,28 @@ class CartService
 
         $this->em->persist($cart);
         $this->em->flush();
+
+        return $cart;
     }
 
-    public function remove(Cart $cart, Product $product)
+    private function checkProductID($data)
     {
+        if (isset($data['product_id']) && !empty($data['product_id'])) {
+
+            $product = $this->productRepository->find($data['product_id']);
+
+            if ($product) {
+                return $product;
+            }
+        }
+
+        throw new Exception('product_id is missing or not well-formed.', Response::HTTP_INSUFFICIENT_STORAGE);
+    }
+
+    public function remove(Cart $cart, $data)
+    {
+        $product = $this->checkProductID($data);
+
         $deleted = false;
 
         foreach ($cart->getProducts() as $item) {
@@ -75,6 +98,8 @@ class CartService
         if (!$deleted) {
             throw new Exception('No product ID: ' . $product->getId() . ' in the cart.', Response::HTTP_INSUFFICIENT_STORAGE);
         }
+
+        return $cart;
     }
 
     public function summary(Cart $cart)

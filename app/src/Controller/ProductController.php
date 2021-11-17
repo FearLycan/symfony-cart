@@ -100,6 +100,31 @@ class ProductController extends ApiController
         }
     }
 
+    /**
+     * @param int $id
+     * @return JsonResponse
+     * @Route("/products/{id}", methods={"PATCH"}, name="edit")
+     */
+    public function edit(Request $request, $id)
+    {
+        $product = $this->find($id);
+        $form = $this->buildForm(ProductType::class, $product);
+
+        $data = $request->request->all();
+        $form->submit($data);
+
+        if ($form->isValid()) {
+
+            $this->em->persist($product);
+
+            $this->em->flush();
+
+            return $this->respond($product, Response::HTTP_OK);
+        } else {
+            return $this->respond($this->errorHandler->formHandler($form), Response::HTTP_BAD_REQUEST);
+        }
+    }
+
     private function find($id)
     {
         $product = $this->repository->find($id);
